@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="meupia-grid",
-    version="1.0.0",
+    version="1.0.1",
     description="Plugin oficial do ecossistema meuPiá para visualização de Grids 2D (A*, BFS, DFS).",
     author="Henry Hamon",
     author_email="henryhamon@gmail.com",
