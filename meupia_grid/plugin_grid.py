@@ -28,17 +28,33 @@ def grid_visitar(x: int, y: int, passo: int):
     else:
         print(f"[Mock Grid] Célula ({x}, {y}) visitada no passo {passo}")
 
-def grid_olhar(x: int, y: int):
+def grid_olhar(x: int, y: int) -> dict:
     """
-    Sensor do Agente: Retorna um dicionário (Python) com os dados da célula nas coordenadas (x, y).
+    Sensor do Agente: Retorna os dados da célula, garantindo chaves em Português.
     """
     if RUNNING_IN_BROWSER and hasattr(js, 'window') and hasattr(js.window, 'meuPiaGridAPI'):
         dados_json_string = js.window.meuPiaGridAPI.sensor(x, y)
+        celula = json.loads(dados_json_string)
         
-        return json.loads(dados_json_string)
+        if "tipo" not in celula:
+            js_type = celula.get("type", "livre")
+            if js_type == "wall":
+                celula["tipo"] = "parede"
+            elif js_type == "start":
+                celula["tipo"] = "inicio"
+            elif js_type == "goal":
+                celula["tipo"] = "objetivo"
+            elif js_type == "fora_limites":
+                celula["tipo"] = "fora_limites"
+            else:
+                celula["tipo"] = "livre"
+                
+        if "passavel" not in celula:
+            celula["passavel"] = celula["tipo"] not in ["parede", "fora_limites"]
+            
+        return celula
     else:
-        print(f"[Mock Grid] Sensor acionado olhando para ({x}, {y})")
-        return {"x": x, "y": y, "tipo": "free", "passavel": True} # Retorna um chão vazio por padrão
+        return {"x": x, "y": y, "tipo": "livre", "passavel": True}
 
 def grid_chegou_objetivo(x: int, y: int) -> bool:
     """Verifica se a última célula visitada pelo agente corresponde ao objetivo."""
